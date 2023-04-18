@@ -20,13 +20,12 @@ const ModalContent = styled.div`
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
 `;
 
-export const Modal = ({ isOpen, onClose, children }) => {
+export const Modal = ({ isOpen, handleCloseModal = null, children }) => {
   if (!isOpen) {
     return null;
   }
-
   return (
-    <ModalOverlay onClick={onClose}>
+    <ModalOverlay onClick={handleCloseModal}>
       <ModalContent onClick={(e) => e.stopPropagation()}>{children}</ModalContent>
     </ModalOverlay>
   );

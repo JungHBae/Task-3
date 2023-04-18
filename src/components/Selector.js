@@ -1,21 +1,28 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { GlobalStyle } from "../GlobalStyles";
+import { SmallButton } from "../GlobalStyles";
 
-const BtnMenu = styled.div`
+const Menu = styled.div`
   display: flex;
   flex-direction: column;
-  ${(props) => props.absolute && "position: absolute;"}
+  align-items: center;
+`;
+const DropdownContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  ${(props) => props.absolute && `position: absolute; left: 21px;`}
 `;
 
 export const Selector = ({ absolute }) => {
+  //menu open/close check
   const [isOpen, setIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("Option 1");
   const menuRef = useRef("");
 
+  // use useEffect to handle outside of menu click within the window
   useEffect(() => {
     function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (!menuRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     }
@@ -24,34 +31,34 @@ export const Selector = ({ absolute }) => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [menuRef]);
-
+  // and an outside browser click handle
   useEffect(() => {
     const handleWindowBlur = () => {
       setIsOpen(false);
     };
-
     window.addEventListener("blur", handleWindowBlur);
-
     return () => {
       window.removeEventListener("blur", handleWindowBlur);
     };
   }, []);
 
+  // update selection and close menu
   const handleItemClick = (item) => {
     setSelectedItem(item);
     setIsOpen(false);
   };
   return (
-    <div className="select" ref={menuRef}>
-      <GlobalStyle />
-      <button onClick={() => setIsOpen(!isOpen)}>{selectedItem} &#9660;</button>
-      {isOpen && (
-        <BtnMenu absolute={absolute}>
-          <button onClick={() => handleItemClick("Option 1")}>Option 1</button>
-          <button onClick={() => handleItemClick("Option 2")}>Option 2</button>
-          <button onClick={() => handleItemClick("Option 3")}>Option 3</button>
-        </BtnMenu>
-      )}
-    </div>
+    <Menu className="select" ref={menuRef}>
+      <SmallButton onClick={() => setIsOpen(!isOpen)}>{selectedItem} &#9660;</SmallButton>
+      <div>
+        {isOpen && (
+          <DropdownContent absolute={absolute}>
+            <SmallButton onClick={() => handleItemClick("Option 1")}>Option 1</SmallButton>
+            <SmallButton onClick={() => handleItemClick("Option 2")}>Option 2</SmallButton>
+            <SmallButton onClick={() => handleItemClick("Option 3")}>Option 3</SmallButton>
+          </DropdownContent>
+        )}
+      </div>
+    </Menu>
   );
 };
